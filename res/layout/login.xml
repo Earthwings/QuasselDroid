@@ -3,8 +3,8 @@
 	android:layout_width="fill_parent" android:layout_height="fill_parent"
 	android:fillViewport="true">
 	<RelativeLayout android:id="@+id/RelativeLayout01"
-		android:layout_width="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android"
-		android:layout_height="fill_parent">
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_height="fill_parent" android:layout_width="fill_parent">
 		<LinearLayout android:layout_height="wrap_content"
 			android:layout_width="wrap_content" android:id="@+id/logo_layout"
 			android:layout_centerHorizontal="true" android:layout_marginTop="10dip" android:layout_marginBottom="20dip">
@@ -55,13 +55,6 @@
 			android:layout_width="wrap_content" android:layout_below="@+id/TableLayout01"
 			android:id="@+id/remember_me_checkbox" android:text="Remember me"
 			android:checked="false" android:layout_alignLeft="@+id/serverSpinner"/>
-		<LinearLayout android:layout_below="@+id/remember_me_checkbox"
-			android:id="@+id/LinearLayout01" android:layout_height="fill_parent"
-			android:layout_width="fill_parent" android:paddingTop="20dip">
-			<Button android:layout_height="wrap_content"
-				android:layout_width="fill_parent" android:text="Connect"
-				android:id="@+id/connect_button" android:layout_below="@+id/remember_me_checkbox"
-				android:layout_gravity="bottom" />
-		</LinearLayout>
+		<Button android:text="Connect" android:id="@+id/connect_button" android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_alignLeft="@+id/serverSpinner" android:layout_below="@+id/remember_me_checkbox" android:layout_alignRight="@+id/serverSpinner" android:layout_marginTop="15dip"></Button>
 	</RelativeLayout>
 </ScrollView>
