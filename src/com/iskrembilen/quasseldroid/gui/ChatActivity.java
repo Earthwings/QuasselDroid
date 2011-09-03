@@ -124,7 +124,6 @@ public class ChatActivity extends Activity{
 
 	OnItemLongClickListener itemLongClickListener = new OnItemLongClickListener() {
 
-		@Override
 		public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 			IrcMessage message = adapter.getItem(position);
 			if (message.hasURLs()) {
@@ -260,7 +259,6 @@ public class ChatActivity extends Activity{
 			}
 			builder.setMultiChoiceItems(filterList, checked, new OnMultiChoiceClickListener() {
 
-				@Override
 				public void onClick(DialogInterface dialog, int which, boolean isChecked) {
 					IrcMessage.Type type = IrcMessage.Type.valueOf(IrcMessage.Type.getFilterList()[which]);
 					if(isChecked)
@@ -308,24 +306,20 @@ public class ChatActivity extends Activity{
 		}
 
 
-		@Override
 		public int getCount() {
 			if (this.buffer==null) return 0;
 			return buffer.getSize();
 		}
 
-		@Override
 		public IrcMessage getItem(int position) {
 			//TODO: QriorityQueue is fucked, we dont want to convert to array here, so change later
 			return (IrcMessage) buffer.getBacklogEntry(position);
 		}
 
-		@Override
 		public long getItemId(int position) {
 			return buffer.getBacklogEntry(position).messageId;
 		}
 
-		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			ViewHolder holder = null;
 
@@ -432,7 +426,6 @@ public class ChatActivity extends Activity{
 			return convertView;
 		}
 
-		@Override
 		public void update(Observable observable, Object data) {
 			if (data==null) {
 				notifyDataSetChanged();
@@ -529,7 +522,6 @@ public class ChatActivity extends Activity{
 			this.visibleThreshold = visibleThreshold;
 		}
 
-		@Override
 		public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 			if (loading) {
 				if (!adapter.buffer.hasPendingBacklog()) {
@@ -549,7 +541,6 @@ public class ChatActivity extends Activity{
 
 		}
 
-		@Override
 		public void onScrollStateChanged(AbsListView view, int scrollState) {
 			// Not interesting for us to use
 

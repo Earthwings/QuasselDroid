@@ -37,7 +37,6 @@ import com.iskrembilen.quasseldroid.qtcomm.QMetaTypeSerializer;
 
 public class MessageSerializer implements QMetaTypeSerializer<IrcMessage> {
 
-	@Override
 	public void serialize(QDataOutputStream stream, IrcMessage data,
 			DataStreamVersion version) throws IOException {
 		stream.writeInt(data.messageId);
@@ -48,7 +47,6 @@ public class MessageSerializer implements QMetaTypeSerializer<IrcMessage> {
 		stream.writeBytes(data.content.toString());//ditto
 	}
 
-	@Override
 	public IrcMessage unserialize(QDataInputStream stream,
 			DataStreamVersion version) throws IOException, EmptyQVariantException {
 		IrcMessage ret = new IrcMessage();

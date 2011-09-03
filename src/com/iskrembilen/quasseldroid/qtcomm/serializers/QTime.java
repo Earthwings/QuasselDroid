@@ -33,7 +33,6 @@ import com.iskrembilen.quasseldroid.qtcomm.QMetaTypeSerializer;
 
 public class QTime implements QMetaTypeSerializer<Calendar> {
 
-	@Override
 	public void serialize(QDataOutputStream stream, Calendar data,
 			DataStreamVersion version) throws IOException {
 		long sum = data.get(Calendar.HOUR) * 3600000;
@@ -43,7 +42,6 @@ public class QTime implements QMetaTypeSerializer<Calendar> {
 		stream.writeUInt(sum, 32);
 	}
 
-	@Override
 	public Calendar unserialize(QDataInputStream stream, DataStreamVersion version)
 			throws IOException {
 		long millisSinceMidnight = stream.readUInt(32);

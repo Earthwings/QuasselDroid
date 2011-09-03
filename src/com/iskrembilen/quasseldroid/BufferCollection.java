@@ -128,7 +128,6 @@ public class BufferCollection extends Observable implements Observer {
 	}
 
 
-	@Override
 	public void update(Observable arg0, Object arg1) {
 		if (arg1!=null && (Integer)arg1 == R.id.BUFFER_ORDER_CHANGED) {
 			Collections.sort(bufferList);

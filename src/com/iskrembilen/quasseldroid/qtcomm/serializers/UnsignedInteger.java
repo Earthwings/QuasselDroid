@@ -36,13 +36,11 @@ public class UnsignedInteger implements QMetaTypeSerializer<Long> {
 	public UnsignedInteger(int size) {
 		this.size = size;
 	}
-	@Override
 	public void serialize(QDataOutputStream stream, Long data,
 			DataStreamVersion version) throws IOException {
 		stream.writeUInt(data, this.size);
 	}
 
-	@Override
 	public Long unserialize(QDataInputStream stream, DataStreamVersion version)
 			throws IOException {
 		return stream.readUInt(this.size);

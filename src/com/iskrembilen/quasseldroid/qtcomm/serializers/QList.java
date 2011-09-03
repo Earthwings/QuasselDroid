@@ -43,7 +43,6 @@ public class QList<T> implements QMetaTypeSerializer<List<T>> {
 		return new ArrayList<T>();
 	}
 	@SuppressWarnings("unchecked")
-	@Override
 	public List<T> unserialize(QDataInputStream stream, DataStreamVersion version)
 			throws IOException, EmptyQVariantException {
 		List<T> list = makeList();
@@ -57,7 +56,6 @@ public class QList<T> implements QMetaTypeSerializer<List<T>> {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
 	public void serialize(QDataOutputStream stream, List<T> data,
 			DataStreamVersion version) throws IOException {
 		stream.writeUInt(data.size(), 32);

@@ -252,7 +252,6 @@ public class LoginActivity extends Activity implements Observer {
 
 			OnClickListener buttonListener = new OnClickListener() {
 
-				@Override
 				public void onClick(View v) {
 					EditText nameField = (EditText)dialog.findViewById(R.id.dialog_name_field);
 					EditText addressField = (EditText)dialog.findViewById(R.id.dialog_address_field);

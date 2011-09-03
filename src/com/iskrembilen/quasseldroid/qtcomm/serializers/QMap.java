@@ -45,7 +45,6 @@ public class QMap<T, V> implements QMetaTypeSerializer<Map<T, V>> {
 	}
 	
 	@SuppressWarnings("unchecked")
-	@Override
 	public void serialize(QDataOutputStream stream,
 			Map<T, V> data, DataStreamVersion version)
 			throws IOException {
@@ -59,7 +58,6 @@ public class QMap<T, V> implements QMetaTypeSerializer<Map<T, V>> {
 		}
 	}
 
-	@Override
 	public Map<T, V> unserialize(QDataInputStream stream,
 			DataStreamVersion version) throws IOException, EmptyQVariantException {
 		

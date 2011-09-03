@@ -35,7 +35,6 @@ public class QString implements QMetaTypeSerializer<String> {
 	
 	StringReaderUtil stringReader = new StringReaderUtil("UTF-16BE");
 	
-	@Override
 	public void serialize(QDataOutputStream stream, String data,
 			DataStreamVersion version) throws IOException {
 		if(data==null){
@@ -46,7 +45,6 @@ public class QString implements QMetaTypeSerializer<String> {
 		}
 	}
 
-	@Override
 	public String unserialize(QDataInputStream stream, DataStreamVersion version)
 			throws IOException {
 		int len = (int)stream.readUInt(32);

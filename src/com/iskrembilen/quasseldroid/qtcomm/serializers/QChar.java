@@ -30,14 +30,12 @@ import com.iskrembilen.quasseldroid.qtcomm.QMetaTypeSerializer;
 
 public class QChar implements QMetaTypeSerializer<Character> {
 
-	@Override
 	public void serialize(QDataOutputStream stream, Character data,
 			DataStreamVersion version) throws IOException {
 		stream.writeUInt(data.charValue(), 16);
 		
 	}
 
-	@Override
 	public Character unserialize(QDataInputStream stream,
 			DataStreamVersion version) throws IOException {
 		return new Character((char) stream.readUInt(16));

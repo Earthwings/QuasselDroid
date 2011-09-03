@@ -102,7 +102,6 @@ public class BufferActivity extends ListActivity{
 		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		listener =new OnSharedPreferenceChangeListener() {
 
-			@Override
 			public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 				if(key.equals(getResources().getString(R.string.preference_fontsize_channel_list))){
 					bufferListAdapter.notifyDataSetChanged();
@@ -220,7 +219,6 @@ public class BufferActivity extends ListActivity{
 			notifyDataSetChanged();
 		}
 
-		@Override
 		public int getCount() {
 			if (bufferCollection==null) {
 				return 0;
@@ -229,17 +227,14 @@ public class BufferActivity extends ListActivity{
 			}
 		}
 
-		@Override
 		public Buffer getItem(int position) {
 			return bufferCollection.getPos(position);
 		}
 
-		@Override
 		public long getItemId(int pos) {
 			return bufferCollection.getPos(pos).getInfo().id;
 		}
 
-		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			ViewHolder holder = null;
 			if (convertView==null) {
@@ -289,7 +284,6 @@ public class BufferActivity extends ListActivity{
 			return convertView;
 		}
 
-		@Override
 		public void update(Observable observable, Object data) {
 			notifyDataSetChanged();
 

@@ -34,7 +34,6 @@ public class QByteArray implements QMetaTypeSerializer<String> {
 	
 	StringReaderUtil stringReader = new StringReaderUtil("UTF-8");
 	
-	@Override
 	public String unserialize(QDataInputStream stream, DataStreamVersion version)
 	throws IOException {
 		int len = (int)stream.readUInt(32);
@@ -44,7 +43,6 @@ public class QByteArray implements QMetaTypeSerializer<String> {
 		return stringReader.readString(stream, len);
 	}
 
-	@Override
 	public void serialize(QDataOutputStream stream, String data,
 			DataStreamVersion version) throws IOException {
 		//OOPS: Requires a byte buffer with array for writing

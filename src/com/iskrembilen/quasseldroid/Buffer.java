@@ -431,7 +431,6 @@ public class Buffer extends Observable implements Comparable<Buffer> {
 		this.topMessageShown = topMessageShown;
 	}
 
-	@Override
 	public int compareTo(Buffer another) {
 		if (info.networkId != another.info.networkId)
 			return info.networkId - another.info.networkId;

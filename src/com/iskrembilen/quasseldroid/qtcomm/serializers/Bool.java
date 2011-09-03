@@ -29,13 +29,11 @@ import com.iskrembilen.quasseldroid.qtcomm.QMetaTypeSerializer;
 
 public class Bool implements QMetaTypeSerializer<Boolean> {
 
-	@Override
 	public void serialize(QDataOutputStream stream, Boolean data,
 			DataStreamVersion version) throws IOException {
 		stream.writeBoolean(data);
 	}
 
-	@Override
 	public Boolean unserialize(QDataInputStream stream, DataStreamVersion version)
 			throws IOException {
 		return stream.readBoolean();

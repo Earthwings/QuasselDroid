@@ -32,7 +32,6 @@ import com.iskrembilen.quasseldroid.qtcomm.QMetaTypeSerializer;
 
 public class QDateTime implements QMetaTypeSerializer<Calendar> {
 
-	@Override
 	public void serialize(QDataOutputStream stream, Calendar data,
 			DataStreamVersion version) throws IOException {
 		int a = (14 - data.get(Calendar.MONTH)) / 12;
@@ -56,7 +55,6 @@ public class QDateTime implements QMetaTypeSerializer<Calendar> {
 		
 	}
 
-	@Override
 	public Calendar unserialize(QDataInputStream stream,
 			DataStreamVersion version) throws IOException {
 		long julianDay = stream.readUInt(32);
