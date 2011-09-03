@@ -124,6 +124,10 @@ public class LoginActivity extends Activity implements Observer {
 		password.setText(settings.getString(PREFS_PASSWORD,""));
 		rememberMe.setChecked(settings.getBoolean(PREFS_REMEMBERME, false));
 
+		if (core.getCount()==0) {
+			showDialog(R.id.DIALOG_ADD_CORE);
+		}
+
 		connect = (Button)findViewById(R.id.connect_button);
 		connect.setOnClickListener(onConnect);
 		
