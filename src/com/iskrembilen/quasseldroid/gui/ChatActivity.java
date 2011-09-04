@@ -24,6 +24,8 @@
 package com.iskrembilen.quasseldroid.gui;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -39,6 +41,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -66,6 +69,7 @@ import android.widget.TextView;
 import com.iskrembilen.quasseldroid.Buffer;
 import com.iskrembilen.quasseldroid.BufferInfo;
 import com.iskrembilen.quasseldroid.IrcMessage;
+import com.iskrembilen.quasseldroid.IrcUser;
 import com.iskrembilen.quasseldroid.IrcMessage.Type;
 import com.iskrembilen.quasseldroid.R;
 import com.iskrembilen.quasseldroid.service.CoreConnService;
@@ -75,7 +79,8 @@ public class ChatActivity extends Activity{
 
 	public static final int MESSAGE_RECEIVED = 0;
 
-	private BacklogAdapter adapter;
+	private BacklogAdapter chatAdapter;
+	private UserlistAdapter userlistAdapter;
 	private ListView backlogList;
 
 
@@ -96,10 +101,10 @@ public class ChatActivity extends Activity{
 
 		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-		adapter = new BacklogAdapter(this, null);
+		chatAdapter = new BacklogAdapter(this, null);
 		backlogList = ((ListView)findViewById(R.id.chatBacklogList));
 		backlogList.setCacheColorHint(0xffffff);
-		backlogList.setAdapter(adapter);
+		backlogList.setAdapter(chatAdapter);
 		backlogList.setOnScrollListener(new BacklogScrollListener(5));
 		backlogList.setDividerHeight(0);
 		backlogList.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
@@ -109,6 +114,13 @@ public class ChatActivity extends Activity{
 		findViewById(R.id.ChatInputView).setOnKeyListener(inputfieldKeyListener);
 		backlogList.setOnItemLongClickListener(itemLongClickListener);
 		((ListView) findViewById(R.id.chatBacklogList)).setCacheColorHint(0xffffff);
+
+		View userView = findViewById(R.id.userList);
+		if (userView != null) { // null for devices with small screens: no user list there
+			userlistAdapter = new UserlistAdapter();
+			ListView userlist = ((ListView) userView);
+			userlist.setAdapter(userlistAdapter);			
+		}
 
 		statusReceiver = new ResultReceiver(null) {
 
@@ -125,7 +137,7 @@ public class ChatActivity extends Activity{
 	OnItemLongClickListener itemLongClickListener = new OnItemLongClickListener() {
 
 		public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-			IrcMessage message = adapter.getItem(position);
+			IrcMessage message = chatAdapter.getItem(position);
 			if (message.hasURLs()) {
 				ArrayList<String> urls = (ArrayList<String>) message.getURLs();
 
@@ -147,7 +159,7 @@ public class ChatActivity extends Activity{
 				String inputText = inputfield.getText().toString();
 
 				if ( ! "".equals(inputText) ) {
-					boundConnService.sendMessage(adapter.buffer.getInfo().id, inputText);
+					boundConnService.sendMessage(chatAdapter.buffer.getInfo().id, inputText);
 					inputfield.setText("");
 				}
 
@@ -171,12 +183,12 @@ public class ChatActivity extends Activity{
 		int inputLength = inputString.lastIndexOf(" ") == -1 ? 0: inputString.substring(0, inputString.lastIndexOf(" ")).length();
 
 		if ( "".equals(inputNick) ) {
-			if ( adapter.buffer.getNicks().size() > 0 ) {
-				inputfield.setText(adapter.buffer.getNicks().get(0)+ ": ");
-				inputfield.setSelection(adapter.buffer.getNicks().get(0).length() + 2);
+			if ( chatAdapter.buffer.getNicks().size() > 0 ) {
+				inputfield.setText(chatAdapter.buffer.getNicks().get(0)+ ": ");
+				inputfield.setSelection(chatAdapter.buffer.getNicks().get(0).length() + 2);
 			}
 		} else {
-			for (String nick : adapter.buffer.getNicks()) {
+			for (String nick : chatAdapter.buffer.getNicks()) {
 				if ( nick.matches("(?i)"+inputNick+".*")  ) { //Matches the start of the string
 					String additional = inputWords.length > 1 ? " ": ": ";
 					inputfield.setText(inputString.substring(0, inputLength) + (inputLength >0 ? " ":"") + nick+  additional);
@@ -222,18 +234,18 @@ public class ChatActivity extends Activity{
 	@Override
 	protected void onStop() {
 		super.onStop();
-		if (adapter.buffer == null) return;
+		if (chatAdapter.buffer == null) return;
 		
 		//Dont save position if list is at bottom
-		if (backlogList.getLastVisiblePosition()==adapter.getCount()-1) {
-			adapter.buffer.setTopMessageShown(0);
+		if (backlogList.getLastVisiblePosition()==chatAdapter.getCount()-1) {
+			chatAdapter.buffer.setTopMessageShown(0);
 		}else{
-			adapter.buffer.setTopMessageShown(adapter.getListTopMessageId());
+			chatAdapter.buffer.setTopMessageShown(chatAdapter.getListTopMessageId());
 		}
-		if (adapter.buffer.getUnfilteredSize()!= 0){
-			boundConnService.setLastSeen(adapter.getBufferId(), adapter.buffer.getUnfilteredBacklogEntry(adapter.buffer.getUnfilteredSize()-1).messageId);
-			boundConnService.markBufferAsRead(adapter.getBufferId());
-			boundConnService.setMarkerLine(adapter.getBufferId(), adapter.buffer.getUnfilteredBacklogEntry(adapter.buffer.getUnfilteredSize()-1).messageId);
+		if (chatAdapter.buffer.getUnfilteredSize()!= 0){
+			boundConnService.setLastSeen(chatAdapter.getBufferId(), chatAdapter.buffer.getUnfilteredBacklogEntry(chatAdapter.buffer.getUnfilteredSize()-1).messageId);
+			boundConnService.markBufferAsRead(chatAdapter.getBufferId());
+			boundConnService.setMarkerLine(chatAdapter.getBufferId(), chatAdapter.buffer.getUnfilteredBacklogEntry(chatAdapter.buffer.getUnfilteredSize()-1).messageId);
 		}
 		doUnbindService();
 	}
@@ -249,7 +261,7 @@ public class ChatActivity extends Activity{
 			builder.setTitle("Hide Events");
 			String[] filterList = IrcMessage.Type.getFilterList();
 			boolean[] checked = new boolean[filterList.length];
-			ArrayList<IrcMessage.Type> filters = adapter.buffer.getFilters();
+			ArrayList<IrcMessage.Type> filters = chatAdapter.buffer.getFilters();
 			for (int i=0;i<checked.length;i++) {
 				if(filters.contains(IrcMessage.Type.valueOf(filterList[i]))) {
 					checked[i]=true;
@@ -262,9 +274,9 @@ public class ChatActivity extends Activity{
 				public void onClick(DialogInterface dialog, int which, boolean isChecked) {
 					IrcMessage.Type type = IrcMessage.Type.valueOf(IrcMessage.Type.getFilterList()[which]);
 					if(isChecked)
-						adapter.addFilter(type);
+						chatAdapter.addFilter(type);
 					else
-						adapter.removeFilter(type);
+						chatAdapter.removeFilter(type);
 				}
 			});
 			dialog = builder.create();
@@ -278,6 +290,76 @@ public class ChatActivity extends Activity{
 	}
 
 
+	public class UserlistAdapter extends BaseAdapter {
+		private List<String> users;
+		private CoreConnService coreConnService;
+
+		public UserlistAdapter() {
+			this.users = new ArrayList<String>();
+		}
+
+		public int getCount() {
+			return users.size();
+		}
+
+		public Object getItem(int index) {
+			if (index >= 0 && index < users.size()) {
+				return users.get(index);
+			}
+
+			return null;
+		}
+
+		public long getItemId(int index) {
+			return index;
+		}
+
+		public View getView(int index, View convertView, ViewGroup group) {
+			TextView view = null;
+			if (convertView == null) {
+				view = new TextView(getApplicationContext());
+			} else {
+				view = (TextView) convertView;
+			}
+			view.setText(getItem(index).toString());
+
+			if (coreConnService != null) {
+				IrcUser user = coreConnService.getUser(users.get(index));
+				if (user != null) {
+					int id = R.drawable.user;
+					view.setText(user.nick);
+					if (user.away) {
+						id = R.drawable.away;
+						view.setTextColor(getResources().getColor(R.color.user_away));
+						if (user.awayMessage.length()>0) {
+							view.setText(user.nick + " (" + user.awayMessage + ")");
+						}
+					} else {
+						view.setTextColor(getResources().getColor(R.color.user_present));
+					}
+
+					Drawable img = getApplicationContext().getResources().getDrawable(id);
+					view.setCompoundDrawablesWithIntrinsicBounds(img, null, null, null);
+					view.setCompoundDrawablePadding(10);
+				}
+			}
+
+			return view;
+		}
+
+		public void setBuffer(Buffer buffer) {
+			if (buffer != null) {
+				users = buffer.getNicks();
+				Collections.sort(users);
+			}
+
+			notifyDataSetChanged();
+		}
+
+		public void setCoreConnService(CoreConnService coreConnService) {
+			this.coreConnService = coreConnService;
+		}
+	}
 
 	public class BacklogAdapter extends BaseAdapter implements Observer {
 
@@ -461,8 +543,8 @@ public class ChatActivity extends Activity{
 		 * Sets what message from the adapter will be at the top of the visible screen
 		 */
 		public void setListTopMessage(int messageid) {
-			for(int i=0;i<adapter.getCount();i++){
-				if (adapter.getItemId(i)==messageid){
+			for(int i=0;i<chatAdapter.getCount();i++){
+				if (chatAdapter.getItemId(i)==messageid){
 					list.setSelectionFromTop(i,5);
 					break;
 				}
@@ -484,8 +566,8 @@ public class ChatActivity extends Activity{
 		}
 
 		public void getMoreBacklog() {
-			adapter.buffer.setBacklogPending(ChatActivity.this.dynamicBacklogAmout);
-			boundConnService.getMoreBacklog(adapter.getBufferId(),ChatActivity.this.dynamicBacklogAmout);
+			chatAdapter.buffer.setBacklogPending(ChatActivity.this.dynamicBacklogAmout);
+			boundConnService.getMoreBacklog(chatAdapter.getBufferId(),ChatActivity.this.dynamicBacklogAmout);
 		}
 
 		public void removeFilter(Type type) {
@@ -524,15 +606,15 @@ public class ChatActivity extends Activity{
 
 		public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 			if (loading) {
-				if (!adapter.buffer.hasPendingBacklog()) {
+				if (!chatAdapter.buffer.hasPendingBacklog()) {
 					loading = false;
 				}
 			}
 //			Log.d(TAG, "loading: "+ Boolean.toString(loading) +"totalItemCount: "+totalItemCount+ "visibleItemCount: " +visibleItemCount+"firstVisibleItem: "+firstVisibleItem+ "visibleThreshold: "+visibleThreshold);
 			if (!loading && (firstVisibleItem <= visibleThreshold)) {
-				if (adapter.buffer!=null) {
+				if (chatAdapter.buffer!=null) {
 					loading = true;
-					ChatActivity.this.adapter.getMoreBacklog();
+					ChatActivity.this.chatAdapter.getMoreBacklog();
 				}else {
 					Log.w(TAG, "Can't get backlog on null buffer");
 				}
@@ -566,13 +648,18 @@ public class ChatActivity extends Activity{
 
 			Intent intent = getIntent();
 			//Testing to see if i can add item to adapter in service
-			adapter.setBuffer(boundConnService.getBuffer(intent.getIntExtra(BufferActivity.BUFFER_ID_EXTRA, 0), adapter));
+			Buffer buffer = boundConnService.getBuffer(intent.getIntExtra(BufferActivity.BUFFER_ID_EXTRA, 0), chatAdapter);
+			chatAdapter.setBuffer(buffer);
+			if (userlistAdapter != null) {
+				userlistAdapter.setCoreConnService(boundConnService);
+				userlistAdapter.setBuffer(buffer);
+			}
 
 			//Move list to correect position
-			if (adapter.buffer.getTopMessageShown() == 0) {
-				backlogList.setSelection(adapter.getCount()-1);
+			if (chatAdapter.buffer.getTopMessageShown() == 0) {
+				backlogList.setSelection(chatAdapter.getCount()-1);
 			}else{
-				adapter.setListTopMessage(adapter.buffer.getTopMessageShown());
+				chatAdapter.setListTopMessage(chatAdapter.buffer.getTopMessageShown());
 			}
 
 			boundConnService.registerStatusReceiver(statusReceiver);
@@ -602,7 +689,7 @@ public class ChatActivity extends Activity{
 		if (isBound) {
 			Log.i(TAG, "Unbinding service");
 			// Detach our existing connection.
-			adapter.stopObserving();
+			chatAdapter.stopObserving();
 			boundConnService.unregisterStatusReceiver(statusReceiver);
 			unbindService(mConnection);
 			isBound = false;

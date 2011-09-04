@@ -28,4 +28,6 @@
 	<color name="ircmessage_light_blue">#4169E1</color>
 	<color name="ircmessage_pink">#F984EF</color>
 	<color name="ircmessage_gray">#888</color>
+	<color name="user_present">#000</color>
+	<color name="user_away">#CCC</color>
 </resources>
